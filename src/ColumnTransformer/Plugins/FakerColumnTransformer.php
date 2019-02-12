@@ -20,6 +20,7 @@ class FakerColumnTransformer extends ColumnTransformer
         'password' => 'password',
         'email' => 'email',
         'safeEmail' => 'safeEmail',
+        'uniqueEmail' => 'safeEmail',
         'date' => 'date',
         'longText' => 'paragraph',
         'number' => 'number',
@@ -33,6 +34,9 @@ class FakerColumnTransformer extends ColumnTransformer
         'postcode' => 'postcode'
     ];
 
+    public static $uniqueFormatterTransformers = [
+        'uniqueEmail' => true,
+    ];
 
     protected function getSupportedFormatters()
     {
@@ -48,6 +52,11 @@ class FakerColumnTransformer extends ColumnTransformer
 
     public function getValue($expression)
     {
-        return self::$factory->format(self::$formatterTansformerMap[$expression['formatter']]);
+        if (isset(self::$uniqueFormatterTransformers[$expression['formatter']])) {
+            $factory = self::$factory->unique();
+        } else {
+            $factory = self::$factory;
+        }
+        return $factory->format(self::$formatterTansformerMap[$expression['formatter']]);
     }
 }
